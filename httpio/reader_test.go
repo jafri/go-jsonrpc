@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 
-	"github.com/filecoin-project/go-jsonrpc"
+	"github.com/jafri/go-jsonrpc"
 )
 
 type ReaderHandler struct {
