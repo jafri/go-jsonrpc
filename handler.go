@@ -447,11 +447,12 @@ func (s *handler) handle(ctx context.Context, req request, w func(func(io.Writer
 	}
 
 	withLazyWriter(w, func(w io.Writer) {
-		// if err := json.NewEncoder(w).Encode(resp); err != nil {
-		// 	log.Error(err)
-		// 	stats.Record(ctx, metrics.RPCResponseError.M(1))
-		// 	return
-		// }
+		jsonEncoder := json.NewEncoder(w)
+		if err := jsonEncoder.Encode(resp); err != nil {
+			// log.Error(err)
+			// stats.Record(ctx, metrics.RPCResponseError.M(1))
+			return
+		}
 	})
 }
 
