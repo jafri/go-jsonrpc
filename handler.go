@@ -10,6 +10,8 @@ import (
 
 	json "github.com/goccy/go-json"
 
+	sonic "github.com/bytedance/sonic"
+
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	"go.opencensus.io/trace"
@@ -486,8 +488,7 @@ func (s *handler) handle(ctx context.Context, req request, w func(func(io.Writer
 	}
 
 	withLazyWriter(w, func(w io.Writer) {
-		jsonEncoder := json.NewEncoder(w);
-		if err := jsonEncoder.Encode(resp); err != nil {
+		if err :=  sonic.ConfigDefault.NewEncoder(w).Encode(resp); err != nil {
 			log.Error(err)
 			stats.Record(ctx, metrics.RPCResponseError.M(1))
 			// hw, ok := w.(*bufio.Writer);
@@ -505,7 +506,6 @@ func (s *handler) handle(ctx context.Context, req request, w func(func(io.Writer
 			// 	log.Errorf("failed to hijack connection 2: %v", err)
 			// 	return
 			// }
-			return
 		}
 		return
 	})
