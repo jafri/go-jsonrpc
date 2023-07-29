@@ -15,6 +15,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/goccy/go-json v0.10.2
 	github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.uber.org/atomic v1.6.0 // indirect

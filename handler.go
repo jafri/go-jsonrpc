@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"reflect"
+
+	json "github.com/goccy/go-json"
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
@@ -488,24 +488,26 @@ func (s *handler) handle(ctx context.Context, req request, w func(func(io.Writer
 	withLazyWriter(w, func(w io.Writer) {
 		jsonEncoder := json.NewEncoder(w);
 		if err := jsonEncoder.Encode(resp); err != nil {
-			hw, ok := w.(http.Hijacker);
-			if ok {
-				conn, writer, err := hw.Hijack();
-				if err != nil {
-					log.Errorf("failed to hijack connection: %v", err)
-					return
-				}
-				defer writer.Writer.Reset(w)
-				defer writer.Flush()
-				defer conn.Close()
-			} else {
-				log.Errorf("failed to hijack connection 2: %v", err)
-				return
-			}
-			// log.Error(err)
-			// stats.Record(ctx, metrics.RPCResponseError.M(1))
+			log.Error(err)
+			stats.Record(ctx, metrics.RPCResponseError.M(1))
+			// hw, ok := w.(*bufio.Writer);
+			// hw.AvailableBuffer()
+			// if ok {
+			// 	conn, writer, err := hw.Hijack();
+			// 	if err != nil {
+			// 		log.Errorf("failed to hijack connection: %v", err)
+			// 		return
+			// 	}
+			// 	defer writer.Writer.Reset(w)
+			// 	defer writer.Flush()
+			// 	defer conn.Close()
+			// } else {
+			// 	log.Errorf("failed to hijack connection 2: %v", err)
+			// 	return
+			// }
 			return
 		}
+		return
 	})
 }
 
