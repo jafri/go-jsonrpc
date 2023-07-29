@@ -486,16 +486,21 @@ func (s *handler) handle(ctx context.Context, req request, w func(func(io.Writer
 	}
 
 	withLazyWriter(w, func(w io.Writer) {
-		jsonEncoder := json.NewEncoder(w)
+		jsonEncoder := json.NewEncoder(w);
 		if err := jsonEncoder.Encode(resp); err != nil {
-			if hw, ok := w.(http.Hijacker); ok {
-				conn, writer, err := hw.Hijack()
+			hw, ok := w.(http.Hijacker);
+			if ok {
+				conn, writer, err := hw.Hijack();
 				if err != nil {
 					log.Errorf("failed to hijack connection: %v", err)
 					return
 				}
+				defer writer.Writer.Reset(w)
 				defer writer.Flush()
 				defer conn.Close()
+			} else {
+				log.Errorf("failed to hijack connection 2: %v", err)
+				return
 			}
 			// log.Error(err)
 			// stats.Record(ctx, metrics.RPCResponseError.M(1))
